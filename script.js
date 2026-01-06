@@ -12,7 +12,6 @@ const DEFAULT_CATEGORIES = ["Pre-Workout", "Protein Shakes", "Healthy Meals", "R
 
 // --- PASTE YOUR EXPORTED JSON DATA HERE TO MAKE IT PERMANENT ---
 const DEFAULT_ITEMS = [
-    [
   {
     "id": 1,
     "name": "Espresso",
