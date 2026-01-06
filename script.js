@@ -12,7 +12,6 @@ const DEFAULT_CATEGORIES = ["Pre-Workout", "Protein Shakes", "Healthy Meals", "R
 
 // --- PASTE YOUR EXPORTED JSON DATA HERE TO MAKE IT PERMANENT ---
 const DEFAULT_ITEMS = [
-    [
     {
         "id": 1,
         "name": "Espresso",
@@ -333,11 +332,38 @@ const DEFAULT_ITEMS = [
         "tags": ["High Protein", "Muscle Recovery", "Gym"],
         "calories": "150 kcal"
     }
-]
 ];
+
+// --- FIREBASE CONFIGURATION ---
+// 1. Go to console.firebase.google.com
+// 2. Create a new project
+// 3. Go to Project Settings > General > "Your apps" > Web (</>)
+// 4. Copy the "firebaseConfig" object and paste it here:
+const firebaseConfig = {
+  apiKey: "AIzaSyD9IkrIInFpj3EvgaA8xc6TRXsZVLLOHuI",
+  authDomain: "b52-digital-menu.firebaseapp.com",
+  projectId: "b52-digital-menu",
+  storageBucket: "b52-digital-menu.firebasestorage.app",
+  messagingSenderId: "578412787584",
+  appId: "1:578412787584:web:08585f18715884e0bd3365"
+};
+
+
+// Initialize Firebase
+let db;
+try {
+    if (firebaseConfig.apiKey !== "YOUR_API_KEY") {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        console.log("Firebase Connected");
+    }
+} catch (error) {
+    console.error("Firebase Error:", error);
+}
 
 // --- 2. STATE MANAGEMENT ---
 let state = {
+    isLoading: !!db,
     isAdmin: false,
     activeCategory: "All",
     searchTerm: "",
@@ -355,6 +381,15 @@ function saveState() {
     localStorage.setItem('b52_config', JSON.stringify(state.config));
     localStorage.setItem('b52_categories', JSON.stringify(state.categories));
     localStorage.setItem('b52_items', JSON.stringify(state.items));
+    
+    // Save to Cloud (Firebase) if connected
+    if (db && state.isAdmin) {
+        db.collection('gym_data').doc('menu').set({
+            items: state.items,
+            categories: state.categories,
+            config: state.config
+        }).then(() => console.log("Saved to Cloud"));
+    }
     render();
 }
 
@@ -686,6 +721,18 @@ function render() {
     document.getElementById('body-bg').style.backgroundColor = state.config.secondaryColor;
 
     const app = document.getElementById('app');
+
+    if (state.isLoading) {
+        app.innerHTML = `
+            <div class="min-h-[60vh] flex flex-col items-center justify-center fade-in">
+                <i data-lucide="dumbbell" class="w-20 h-20 animate-spin" style="color: ${state.config.primaryColor}"></i>
+                <p class="mt-6 text-xl font-bold text-gray-500 animate-pulse">LOADING MENU...</p>
+            </div>
+        `;
+        lucide.createIcons();
+        return;
+    }
+
     let content = '';
     
     content += renderNavbar();
@@ -869,6 +916,25 @@ window.importData = (input) => {
         }
     };
 };
+
+// --- 7. REAL-TIME SYNC ---
+if (db) {
+    // Listen for changes from the database
+    db.collection('gym_data').doc('menu').onSnapshot((doc) => {
+        state.isLoading = false;
+        if (doc.exists) {
+            const data = doc.data();
+            state.items = data.items || state.items;
+            state.categories = data.categories || state.categories;
+            state.config = data.config || state.config;
+        }
+        render();
+    }, (error) => {
+        console.error("Error fetching data:", error);
+        state.isLoading = false;
+        render();
+    });
+}
 
 // Initial Render
 render();
