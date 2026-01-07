@@ -627,6 +627,10 @@ async function syncDatabase() {
             // Handle both Array (legacy) and Object (new) formats
             if (Array.isArray(serverData)) {
                 newItems = serverData;
+                // Smart Fix: If on a new device with no categories, extract them from the items automatically
+                if (newCategories.length === 0) {
+                    newCategories = [...new Set(newItems.map(item => item.category))];
+                }
             } else if (serverData.items) {
                 newItems = serverData.items;
                 if (serverData.categories) newCategories = serverData.categories;
@@ -664,4 +668,10 @@ async function init() {
     setInterval(syncDatabase, 5000);
 }
 
+// Fix for file input cancellation error
+window.importData = (input) => {
+    if (!input.files.length) return;
+    const fileReader = new FileReader();
+    // ... existing code ...
 init();
+}
