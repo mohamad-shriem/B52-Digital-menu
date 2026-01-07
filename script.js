@@ -3,14 +3,13 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebas
 import { getFirestore, collection, doc, getDoc, setDoc, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyD9IkrIInFpj3EvgaA8xc6TRXsZVLLOHuI",
+  authDomain: "b52-digital-menu.firebaseapp.com",
+  projectId: "b52-digital-menu",
+  storageBucket: "b52-digital-menu.firebasestorage.app",
+  messagingSenderId: "578412787584",
+  appId: "1:578412787584:web:08585f18715884e0bd3365"
 };
-
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
@@ -807,3 +806,4 @@ async function init() {
 }
 
 init();
+
