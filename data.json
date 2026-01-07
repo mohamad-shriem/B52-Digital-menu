@@ -1,0 +1,322 @@
+[
+    {
+        "id": 1,
+        "name": "Espresso",
+        "description": "Coffee blend",
+        "price": 1.67,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Strong", "Sugar Free", "Keto"],
+        "calories": "9 kcal"
+    },
+    {
+        "id": 2,
+        "name": "Double espresso",
+        "description": "Coffee blend",
+        "price": 3.33,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1510591509098-f4fdc6d0ff04?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Strong", "Sugar Free", "Keto"],
+        "calories": "18 kcal"
+    },
+    {
+        "id": 3,
+        "name": "Tea selection",
+        "description": "Flavoured premium tea",
+        "price": 2.00,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1594631252845-29fc4cc8cde9?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Herbal", "Sugar Free", "Relaxing"],
+        "calories": "2 kcal"
+    },
+    {
+        "id": 4,
+        "name": "Ginger honey",
+        "description": "Ginger - honey - mint leaves - lemon slice",
+        "price": 2.50,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1576092768241-dec231879fc3?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Immunity", "Healthy", "Caffeine Free"],
+        "calories": "45 kcal"
+    },
+    {
+        "id": 5,
+        "name": "Cappuccino",
+        "description": "Double espresso with zero fat milk and extra milk foam",
+        "price": 4.44,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Dairy", "Low Fat", "Classic"],
+        "calories": "80 kcal"
+    },
+    {
+        "id": 6,
+        "name": "Nescafe",
+        "description": "Instant coffee with zero fat Or Coffee mate Light",
+        "price": 3.33,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1561047029-3000c68339ca?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Quick", "Dairy", "Light"],
+        "calories": "60 kcal"
+    },
+    {
+        "id": 7,
+        "name": "Latte classic",
+        "description": "Double espresso with milk and milk foam",
+        "price": 4.44,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1593443320739-77f74952dabd?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Dairy", "Creamy", "Popular"],
+        "calories": "120 kcal"
+    },
+    {
+        "id": 8,
+        "name": "Americano",
+        "description": "Double espresso and hot water",
+        "price": 3.33,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1551033406-611cf9a28f67?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Sugar Free", "Strong", "Keto"],
+        "calories": "15 kcal"
+    },
+    {
+        "id": 9,
+        "name": "Spanish latte",
+        "description": "Double espresso with milk and milk foam and condensed milk",
+        "price": 5.00,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1626006847113-5735c03f4435?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Sweet", "Dairy", "Rich"],
+        "calories": "210 kcal"
+    },
+    {
+        "id": 10,
+        "name": "Latte flavored",
+        "description": "Double espresso with milk and milk foam zero sugar flavour",
+        "price": 5.00,
+        "category": "Hot Drinks",
+        "image": "https://images.unsplash.com/photo-1599398054066-846f28917f38?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Dairy", "Zero Sugar", "Flavored"],
+        "calories": "130 kcal"
+    },
+    {
+        "id": 11,
+        "name": "Iced Latte",
+        "description": "Double espresso + milk + Ice",
+        "price": 4.50,
+        "category": "Cold Drinks",
+        "image": "https://images.unsplash.com/photo-1517701604599-bb29b5c5090c?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Cold", "Dairy", "Refreshing"],
+        "calories": "110 kcal"
+    },
+    {
+        "id": 12,
+        "name": "Iced Latte flavored",
+        "description": "Double espresso + milk + Ice and zero sugar flavour",
+        "price": 5.00,
+        "category": "Cold Drinks",
+        "image": "https://images.unsplash.com/photo-1642648439702-863a35489f66?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Cold", "Dairy", "Sugar Free"],
+        "calories": "120 kcal"
+    },
+    {
+        "id": 13,
+        "name": "Iced Americano",
+        "description": "Double espresso + water + ice",
+        "price": 3.50,
+        "category": "Cold Drinks",
+        "image": "https://images.unsplash.com/photo-1525096172420-1a1362024707?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Cold", "Sugar Free", "Low Calorie"],
+        "calories": "15 kcal"
+    },
+    {
+        "id": 14,
+        "name": "Iced Spanish latte",
+        "description": "Double espresso + milk + ice + condensed milk",
+        "price": 5.00,
+        "category": "Cold Drinks",
+        "image": "https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Cold", "Sweet", "Dairy"],
+        "calories": "220 kcal"
+    },
+    {
+        "id": 15,
+        "name": "Classic Mojito",
+        "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water",
+        "price": 4.44,
+        "category": "Mojitos",
+        "image": "https://images.unsplash.com/photo-1513558161293-cdaf765ed2fd?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Sugar Free", "Vegan", "Refreshing"],
+        "calories": "40 kcal"
+    },
+    {
+        "id": 16,
+        "name": "Passion Fruit Mojito",
+        "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water - Passion fruit fresh",
+        "price": 5.00,
+        "category": "Mojitos",
+        "image": "https://images.unsplash.com/photo-1536935338788-843bb6303668?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Fruity", "Vegan", "Sugar Free"],
+        "calories": "65 kcal"
+    },
+    {
+        "id": 17,
+        "name": "Strawberry Mojito",
+        "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water - strawberry fresh",
+        "price": 5.00,
+        "category": "Mojitos",
+        "image": "https://images.unsplash.com/photo-1601614902181-2292025624eb?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Fruity", "Vegan", "Sugar Free"],
+        "calories": "60 kcal"
+    },
+    {
+        "id": 18,
+        "name": "Mixed berries Mojito",
+        "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water - mixed berries",
+        "price": 6.11,
+        "category": "Mojitos",
+        "image": "https://images.unsplash.com/photo-1517093157502-3e284a29a071?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Antioxidants", "Vegan", "Sugar Free"],
+        "calories": "70 kcal"
+    },
+    {
+        "id": 19,
+        "name": "Orange",
+        "description": "Fresh orange",
+        "price": 3.33,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Vitamin C", "Vegan", "Natural"],
+        "calories": "110 kcal"
+    },
+    {
+        "id": 20,
+        "name": "Mango",
+        "description": "Fresh mango",
+        "price": 4.00,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Tropical", "Vegan", "Sweet"],
+        "calories": "130 kcal"
+    },
+    {
+        "id": 21,
+        "name": "Carrots",
+        "description": "Fresh carrots",
+        "price": 3.33,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1625937329935-29c8744570b7?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Detox", "Vegan", "Healthy"],
+        "calories": "95 kcal"
+    },
+    {
+        "id": 22,
+        "name": "Carrots and orange",
+        "description": "Fresh carrots and orange",
+        "price": 3.50,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Immunity", "Vegan", "Vitamin C"],
+        "calories": "100 kcal"
+    },
+    {
+        "id": 23,
+        "name": "Apples",
+        "description": "Fresh apples",
+        "price": 4.50,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1611153722709-a78526569202?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Natural", "Vegan", "Refreshing"],
+        "calories": "115 kcal"
+    },
+    {
+        "id": 24,
+        "name": "Apples and beetroot",
+        "description": "Apples and Beetroot",
+        "price": 4.50,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1621919866141-841c6f39d899?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Detox", "Vegan", "Superfood"],
+        "calories": "110 kcal"
+    },
+    {
+        "id": 25,
+        "name": "Banana milk",
+        "description": "Banana and zero fat milk and honey",
+        "price": 4.00,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1577805947697-b984381e95e3?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Dairy", "Energy", "Sweet"],
+        "calories": "180 kcal"
+    },
+    {
+        "id": 26,
+        "name": "Golden Gain",
+        "description": "Banana + Milk + date",
+        "price": 5.00,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1594489569733-469b82142752?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Energy", "Post-Workout", "Natural Sweetener"],
+        "calories": "250 kcal"
+    },
+    {
+        "id": 27,
+        "name": "Avocado",
+        "description": "Avocados with nuts and honey",
+        "price": 7.00,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1634509727464-9f20c4c45b71?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Healthy Fats", "Rich", "Filling"],
+        "calories": "320 kcal"
+    },
+    {
+        "id": 28,
+        "name": "Passion orange",
+        "description": "Fresh orange combined with passion",
+        "price": 4.50,
+        "category": "Fresh Juice",
+        "image": "https://images.unsplash.com/photo-1613478223719-2ab802602423?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Tropical", "Vitamin C", "Zesty"],
+        "calories": "120 kcal"
+    },
+    {
+        "id": 29,
+        "name": "Water Large",
+        "description": "Pure mineral water",
+        "price": 1.00,
+        "category": "Water",
+        "image": "https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Hydration", "Zero Calorie"],
+        "calories": "0 kcal"
+    },
+    {
+        "id": 30,
+        "name": "Water Small",
+        "description": "Pure mineral water",
+        "price": 0.50,
+        "category": "Water",
+        "image": "https://images.unsplash.com/photo-1564419320461-6870880221ad?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Hydration", "Zero Calorie"],
+        "calories": "0 kcal"
+    },
+    {
+        "id": 31,
+        "name": "Sparkling Water",
+        "description": "Carbonated mineral water",
+        "price": 1.22,
+        "category": "Water",
+        "image": "https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=600",
+        "tags": ["Fizzy", "Zero Calorie", "Refreshing"],
+        "calories": "0 kcal"
+    },
+    {
+        "id": 32,
+        "name": "Protein shake",
+        "description": "Raw ISO Protein shake",
+        "price": 5.00,
+        "category": "Protein Shakes",
+        "image": "https://images.unsplash.com/photo-1593095948071-474c5cc2989d?auto=format&fit=crop&q=80&w=600",
+        "tags": ["High Protein", "Muscle Recovery", "Gym"],
+        "calories": "150 kcal"
+    }
+]
