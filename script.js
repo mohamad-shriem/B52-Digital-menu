@@ -17,8 +17,8 @@ let state = {
     activeTab: "items", // for admin dashboard
     editingItem: null,  // stores item object if editing
     
-    // Config persists in Local Storage (User preferences like colors/password)
-    config: JSON.parse(localStorage.getItem('b52_config')) || DEFAULT_CONFIG,
+    // Config: Defaults to internal, then loads from data.json
+    config: { ...DEFAULT_CONFIG },
     
     // DATA: Always loads from data.json (No Local Storage History)
     categories: [],
@@ -27,9 +27,7 @@ let state = {
 
 // Save state helper
 function saveState() {
-    // We ONLY save config to browser history. 
-    // Items and Categories are now purely file-based to prevent sync issues.
-    localStorage.setItem('b52_config', JSON.stringify(state.config));
+    // No local storage saving. Changes exist in memory until Exported.
     render();
 }
 
@@ -575,7 +573,8 @@ window.deleteCategory = (cat) => {
 window.exportData = () => {
     const data = {
         items: state.items,
-        categories: state.categories
+        categories: state.categories,
+        config: state.config
     };
     const dataStr = JSON.stringify(data, null, 2);
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
@@ -597,6 +596,7 @@ window.importData = (input) => {
             if (parsedData.items && Array.isArray(parsedData.items)) {
                 state.items = parsedData.items;
                 if (parsedData.categories) state.categories = parsedData.categories;
+                if (parsedData.config) state.config = parsedData.config;
                 saveState();
                 alert("Menu and categories successfully imported!");
             } else if(Array.isArray(parsedData)) {
@@ -625,6 +625,7 @@ async function syncDatabase(force = false) {
             
             let newItems = [];
             let newCategories = [];
+            let newConfig = { ...DEFAULT_CONFIG };
 
             // Handle both Array (legacy) and Object (new) formats
             if (Array.isArray(serverData)) {
@@ -636,15 +637,18 @@ async function syncDatabase(force = false) {
             } else if (serverData.items) {
                 newItems = serverData.items;
                 newCategories = serverData.categories || [];
+                if (serverData.config) newConfig = serverData.config;
             }
             
             // Only update if data actually changed to prevent flickering
             const itemsChanged = JSON.stringify(newItems) !== JSON.stringify(state.items);
             const catsChanged = JSON.stringify(newCategories) !== JSON.stringify(state.categories);
+            const configChanged = JSON.stringify(newConfig) !== JSON.stringify(state.config);
 
-            if (itemsChanged || catsChanged) {
+            if (itemsChanged || catsChanged || configChanged) {
                 state.items = newItems;
                 state.categories = newCategories;
+                state.config = newConfig;
                 
                 // We do NOT save to localStorage here. 
                 // The file is the source of truth.
