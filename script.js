@@ -1,3 +1,20 @@
+// --- 0. FIREBASE CONFIG ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, collection, doc, getDoc, setDoc, addDoc, deleteDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
 // --- 1. DEFAULT DATA ---
 const DEFAULT_CONFIG = {
     gymName: "b52 Fitness Elites",
@@ -13,6 +30,7 @@ let state = {
     isLoading: true,
     isAdmin: false,
     activeCategory: "All",
+    activeDepartment: "Bar",
     searchTerm: "",
     activeTab: "items", // for admin dashboard
     editingItem: null,  // stores item object if editing
@@ -222,16 +240,26 @@ function renderItemRow(item) {
 }
 
 function renderUserView() {
+    const departments = ["Bar", "Kitchen", "Supplements"];
+
     // Filter Items
     const filtered = state.items.filter(item => {
+        // Default to 'Bar' if no department set (migration handling)
+        const itemDept = item.department || (item.category === 'Protien Shake' ? 'Supplements' : 'Bar');
+        const matchesDept = itemDept === state.activeDepartment;
         const matchesCategory = state.activeCategory === "All" || item.category === state.activeCategory;
         const matchesSearch = item.name.toLowerCase().includes(state.searchTerm.toLowerCase()) || 
                             item.description.toLowerCase().includes(state.searchTerm.toLowerCase());
-        return matchesCategory && matchesSearch;
+        return matchesDept && matchesCategory && matchesSearch;
     });
 
+    // Filter Categories based on active Department items
+    const deptItems = state.items.filter(i => (i.department || (i.category === 'Protien Shake' ? 'Supplements' : 'Bar')) === state.activeDepartment);
+    const deptCategories = [...new Set(deptItems.map(i => i.category))];
+    const categoriesToShow = deptCategories.length > 0 ? deptCategories : state.categories;
+
     // Generate Categories HTML
-    const categoriesHTML = ['All', ...state.categories].map(cat => `
+    const categoriesHTML = ['All', ...categoriesToShow].map(cat => `
         <button
             onclick="setCategory('${cat}')"
             class="px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 border ${state.activeCategory === cat ? 'text-white border-transparent shadow-lg' : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30 hover:text-white'}"
@@ -257,6 +285,19 @@ function renderUserView() {
             <p class="text-gray-400 max-w-2xl">
                 Premium nutrition for elite performance. Browse our selection of supplements, meals, and gear.
             </p>
+        </div>
+
+        <!-- Departments -->
+        <div class="flex gap-4 mb-6 border-b border-white/10 pb-1">
+            ${departments.map(dept => `
+                <button 
+                    onclick="setDepartment('${dept}')"
+                    class="text-lg font-bold pb-3 px-2 transition-colors relative ${state.activeDepartment === dept ? 'text-white' : 'text-gray-500 hover:text-gray-300'}"
+                >
+                    ${dept}
+                    ${state.activeDepartment === dept ? `<div class="absolute bottom-0 left-0 w-full h-0.5" style="background-color: ${state.config.primaryColor}"></div>` : ''}
+                </button>
+            `).join('')}
         </div>
 
         <div class="flex overflow-x-auto pb-6 gap-3 no-scrollbar mb-4">
@@ -290,7 +331,7 @@ function renderAdminDashboard() {
     // Render Items Tab
     if (state.activeTab === 'items') {
         const isEditing = state.editingItem !== null;
-        const formItem = state.editingItem || { name: '', description: '', price: '', category: state.categories[0] || '', image: '', tags: [], calories: '' };
+        const formItem = state.editingItem || { name: '', description: '', price: '', category: state.categories[0] || '', image: '', tags: [], calories: '', department: 'Bar' };
         const tagsString = Array.isArray(formItem.tags) ? formItem.tags.join(', ') : formItem.tags;
 
         // Form HTML
@@ -316,6 +357,12 @@ function renderAdminDashboard() {
                                 ${state.categories.map(c => `<option value="${c}" ${formItem.category === c ? 'selected' : ''}>${c}</option>`).join('')}
                             </select>
                         </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Department</label>
+                        <select name="department" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-gray-300">
+                            ${['Bar', 'Kitchen', 'Supplements'].map(d => `<option value="${d}" ${formItem.department === d ? 'selected' : ''}>${d}</option>`).join('')}
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Image URL</label>
@@ -439,11 +486,13 @@ function renderAdminDashboard() {
             <div class="bg-white/5 p-6 rounded-2xl border border-white/10 md:col-span-2">
                 <h3 class="text-xl font-bold mb-4">Publish Changes</h3>
                 <p class="text-gray-400 text-sm mb-4">
-                    <span class="text-red-400 font-bold">IMPORTANT:</span> Changes are currently in memory only. 
-                    <br>To save your work, you MUST click <b>Export Data</b> and replace your <b>data.json</b> file.
-                    <br>If you refresh without exporting, changes will be lost.
+                    <span class="text-blue-400 font-bold">FIREBASE MODE:</span> Data is synced with the cloud.
                 </p>
                 <div class="flex gap-4">
+                    <button onclick="migrateToFirebase()" class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold bg-purple-600 hover:bg-purple-700 text-white transition-colors">
+                        <i data-lucide="cloud-upload" class="w-5 h-5"></i>
+                        Migrate JSON to Firebase
+                    </button>
                     <button onclick="exportData()" class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold bg-green-600 hover:bg-green-700 text-white transition-colors">
                         <i data-lucide="download" class="w-5 h-5"></i>
                         Export Data (JSON)
@@ -571,6 +620,12 @@ window.setCategory = (cat) => {
     render();
 };
 
+window.setDepartment = (dept) => {
+    state.activeDepartment = dept;
+    state.activeCategory = "All";
+    render();
+};
+
 window.setAdminTab = (tab) => {
     state.activeTab = tab;
     render();
@@ -581,10 +636,11 @@ window.handleItemSubmit = (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     const newItem = {
-        id: state.editingItem ? state.editingItem.id : Date.now(),
+        id: state.editingItem ? state.editingItem.id : String(Date.now()),
         name: formData.get('name'),
         price: parseFloat(formData.get('price')),
         category: formData.get('category'),
+        department: formData.get('department'),
         image: formData.get('image'),
         description: formData.get('description'),
         tags: formData.get('tags').split(',').map(t => t.trim()).filter(Boolean),
@@ -592,13 +648,10 @@ window.handleItemSubmit = (e) => {
         isFeatured: formData.get('isFeatured') === 'on'
     };
 
-    if (state.editingItem) {
-        state.items = state.items.map(item => item.id === newItem.id ? newItem : item);
+    const itemRef = doc(db, "items", String(newItem.id));
+    setDoc(itemRef, newItem).then(() => {
         state.editingItem = null;
-    } else {
-        state.items.push(newItem);
-    }
-    saveState();
+    }).catch(err => alert("Error saving: " + err.message));
 };
 
 window.startEdit = (id) => {
@@ -614,23 +667,22 @@ window.cancelEdit = () => {
 
 window.deleteItem = (id) => {
     if(confirm("Are you sure you want to delete this item?")) {
-        state.items = state.items.filter(i => i.id !== id);
-        saveState();
+        deleteDoc(doc(db, "items", String(id)));
     }
 };
 
 // Config & Categories
 window.updateConfig = (key, val) => {
     state.config[key] = val;
-    saveState();
+    setDoc(doc(db, "settings", "config"), state.config);
 };
 
 window.addCategory = (e) => {
     e.preventDefault();
     const val = e.target.newCat.value.trim();
     if(val && !state.categories.includes(val)) {
-        state.categories.push(val);
-        saveState();
+        const newCats = [...state.categories, val];
+        setDoc(doc(db, "settings", "categories"), { list: newCats });
     }
 };
 
@@ -639,14 +691,14 @@ window.moveCategory = (index, direction) => {
     if (newIndex >= 0 && newIndex < state.categories.length) {
         // Swap
         [state.categories[index], state.categories[newIndex]] = [state.categories[newIndex], state.categories[index]];
-        saveState();
+        setDoc(doc(db, "settings", "categories"), { list: state.categories });
     }
 };
 
 window.deleteCategory = (cat) => {
     if(confirm(`Delete category "${cat}"?`)) {
-        state.categories = state.categories.filter(c => c !== cat);
-        saveState();
+        const newCats = state.categories.filter(c => c !== cat);
+        setDoc(doc(db, "settings", "categories"), { list: newCats });
     }
 };
 
@@ -693,56 +745,55 @@ window.importData = (input) => {
     };
 };
 
+window.migrateToFirebase = async () => {
+    if(!confirm("This will overwrite/add current JSON data to Firestore. Continue?")) return;
+    try {
+        await setDoc(doc(db, "settings", "config"), state.config);
+        await setDoc(doc(db, "settings", "categories"), { list: state.categories });
+        let count = 0;
+        for (const item of state.items) {
+            if (!item.department) item.department = item.category === 'Protien Shake' ? 'Supplements' : 'Bar';
+            await setDoc(doc(db, "items", String(item.id)), item);
+            count++;
+        }
+        alert(`Migration Complete! Uploaded ${count} items.`);
+    } catch (e) { alert("Migration failed: " + e.message); }
+};
+
 // --- 7. INITIALIZATION ---
 async function syncDatabase(force = false) {
-    // If Admin is working, DO NOT overwrite their work with server data
-    if (state.isAdmin && !force) return;
-
+    // 1. Load JSON (for migration purposes)
     try {
-        // Fetch data.json with a timestamp to bypass cache
-        const response = await fetch('data.json?t=' + Date.now());
-        if (response.ok) {
-            const serverData = await response.json();
-            
-            let newItems = [];
-            let newCategories = [];
-            let newConfig = { ...DEFAULT_CONFIG };
-
-            // Handle both Array (legacy) and Object (new) formats
-            if (Array.isArray(serverData)) {
-                newItems = serverData;
-                // Smart Fix: If on a new device with no categories, extract them from the items automatically
-                if (newCategories.length === 0) {
-                    newCategories = [...new Set(newItems.map(item => item.category))];
-                }
-            } else if (serverData.items) {
-                newItems = serverData.items;
-                newCategories = serverData.categories || [];
-                if (serverData.config) newConfig = serverData.config;
-            }
-            
-            // Only update if data actually changed to prevent flickering
-            const itemsChanged = JSON.stringify(newItems) !== JSON.stringify(state.items);
-            const catsChanged = JSON.stringify(newCategories) !== JSON.stringify(state.categories);
-            const configChanged = JSON.stringify(newConfig) !== JSON.stringify(state.config);
-
-            if (itemsChanged || catsChanged || configChanged) {
-                state.items = newItems;
-                state.categories = newCategories;
-                state.config = newConfig;
-                
-                // We do NOT save to localStorage here. 
-                // The file is the source of truth.
-                
-                if (!state.editingItem) {
-                    render();
-                }
-                console.log("Database synced");
-            }
+        const response = await fetch('data.json');
+        const data = await response.json();
+        if(data.items) {
+            state.items = data.items;
+            state.categories = data.categories;
+            state.config = data.config || state.config;
         }
-    } catch (e) {
-        console.log("Running in offline/local mode or file not found");
-    }
+    } catch(e) { console.log("No local JSON found"); }
+
+    // 2. Subscribe to Firestore
+    onSnapshot(collection(db, "items"), (snapshot) => {
+        const items = [];
+        snapshot.forEach((doc) => items.push(doc.data()));
+        if(items.length > 0) state.items = items;
+        render();
+    });
+
+    onSnapshot(doc(db, "settings", "categories"), (doc) => {
+        if (doc.exists()) {
+            state.categories = doc.data().list;
+            render();
+        }
+    });
+
+    onSnapshot(doc(db, "settings", "config"), (doc) => {
+        if (doc.exists()) {
+            state.config = { ...DEFAULT_CONFIG, ...doc.data() };
+            render();
+        }
+    });
 }
 
 async function init() {
@@ -752,7 +803,7 @@ async function init() {
     render();
 
     // Poll for updates every 5 seconds
-    setInterval(syncDatabase, 5000);
+    // setInterval(syncDatabase, 5000);
 }
 
 init();
