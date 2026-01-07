@@ -13,6 +13,7 @@ let state = {
     isLoading: true,
     isAdmin: false,
     activeCategory: "All",
+    activeDepartment: "Bar",
     searchTerm: "",
     activeTab: "items", // for admin dashboard
     editingItem: null,  // stores item object if editing
@@ -222,16 +223,27 @@ function renderItemRow(item) {
 }
 
 function renderUserView() {
+    const departments = ["Bar", "Kitchen", "Supplements"];
+    
+    // Helper to resolve department (handling legacy data)
+    const getDept = (i) => i.department || (i.category === 'Protein Shakes' ? 'Supplements' : 'Bar');
+
     // Filter Items
     const filtered = state.items.filter(item => {
+        const itemDept = getDept(item);
+        const matchesDept = itemDept === state.activeDepartment;
         const matchesCategory = state.activeCategory === "All" || item.category === state.activeCategory;
         const matchesSearch = item.name.toLowerCase().includes(state.searchTerm.toLowerCase()) || 
                             item.description.toLowerCase().includes(state.searchTerm.toLowerCase());
-        return matchesCategory && matchesSearch;
+        return matchesDept && matchesCategory && matchesSearch;
     });
 
+    // Get categories relevant to current department
+    const deptCategories = [...new Set(state.items.filter(i => getDept(i) === state.activeDepartment).map(i => i.category))];
+    const categoriesToShow = deptCategories.length > 0 ? deptCategories : [];
+
     // Generate Categories HTML
-    const categoriesHTML = ['All', ...state.categories].map(cat => `
+    const categoriesHTML = ['All', ...categoriesToShow].map(cat => `
         <button
             onclick="setCategory('${cat}')"
             class="px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 border ${state.activeCategory === cat ? 'text-white border-transparent shadow-lg' : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30 hover:text-white'}"
@@ -257,6 +269,19 @@ function renderUserView() {
             <p class="text-gray-400 max-w-2xl">
                 Premium nutrition for elite performance. Browse our selection of supplements, meals, and gear.
             </p>
+        </div>
+
+        <!-- Departments -->
+        <div class="flex gap-6 mb-6 border-b border-white/10 pb-1">
+            ${departments.map(dept => `
+                <button 
+                    onclick="setDepartment('${dept}')"
+                    class="text-lg font-bold pb-3 px-2 transition-colors relative ${state.activeDepartment === dept ? 'text-white' : 'text-gray-500 hover:text-gray-300'}"
+                >
+                    ${dept}
+                    ${state.activeDepartment === dept ? `<div class="absolute bottom-0 left-0 w-full h-0.5" style="background-color: ${state.config.primaryColor}"></div>` : ''}
+                </button>
+            `).join('')}
         </div>
 
         <div class="flex overflow-x-auto pb-6 gap-3 no-scrollbar mb-4">
@@ -290,7 +315,13 @@ function renderAdminDashboard() {
     // Render Items Tab
     if (state.activeTab === 'items') {
         const isEditing = state.editingItem !== null;
-        const formItem = state.editingItem || { name: '', description: '', price: '', category: state.categories[0] || '', image: '', tags: [], calories: '' };
+        const formItem = state.editingItem || { name: '', description: '', price: '', category: state.categories[0] || '', image: '', tags: [], calories: '', department: 'Bar' };
+        
+        // Infer department for legacy items being edited
+        if (!formItem.department && formItem.category) {
+            formItem.department = (formItem.category === 'Protein Shakes') ? 'Supplements' : 'Bar';
+        }
+
         const tagsString = Array.isArray(formItem.tags) ? formItem.tags.join(', ') : formItem.tags;
 
         // Form HTML
@@ -316,6 +347,12 @@ function renderAdminDashboard() {
                                 ${state.categories.map(c => `<option value="${c}" ${formItem.category === c ? 'selected' : ''}>${c}</option>`).join('')}
                             </select>
                         </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Department</label>
+                        <select name="department" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-gray-300">
+                            ${['Bar', 'Kitchen', 'Supplements'].map(d => `<option value="${d}" ${formItem.department === d ? 'selected' : ''}>${d}</option>`).join('')}
+                        </select>
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Image URL</label>
@@ -566,6 +603,12 @@ window.handleSearch = (val) => {
     input.setSelectionRange(input.value.length, input.value.length);
 };
 
+window.setDepartment = (dept) => {
+    state.activeDepartment = dept;
+    state.activeCategory = "All";
+    render();
+};
+
 window.setCategory = (cat) => {
     state.activeCategory = cat;
     render();
@@ -585,6 +628,7 @@ window.handleItemSubmit = (e) => {
         name: formData.get('name'),
         price: parseFloat(formData.get('price')),
         category: formData.get('category'),
+        department: formData.get('department'),
         image: formData.get('image'),
         description: formData.get('description'),
         tags: formData.get('tags').split(',').map(t => t.trim()).filter(Boolean),
