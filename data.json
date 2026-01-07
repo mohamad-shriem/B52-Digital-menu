@@ -447,5 +447,13 @@
       "calories": "150 kcal"
     }
   ],
-  "categories": []
+  "categories": [
+    "Hot Drinks",
+    "Cold Drinks",
+    "Mojitos",
+    "Fresh Juice",
+    "Water",
+    "Protien Shake"
+]
 }
+
