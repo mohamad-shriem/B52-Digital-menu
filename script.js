@@ -109,7 +109,15 @@ function renderNavbar() {
                     >
                         <i data-lucide="log-out" class="w-5 h-5"></i>
                     </button>
-                    ` : ''}
+                    ` : `
+                    <button 
+                        onclick="toggleAdmin()"
+                        class="p-2 rounded-full transition-colors bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
+                        title="Admin Login"
+                    >
+                        <i data-lucide="lock" class="w-5 h-5"></i>
+                    </button>
+                    `}
                 </div>
             </div>
         </div>
@@ -255,7 +263,7 @@ function renderUserView() {
     // Filter Categories based on active Department items
     const deptItems = state.items.filter(i => (i.department || (i.category === 'Protien Shake' ? 'Supplements' : 'Bar')) === state.activeDepartment);
     const deptCategories = [...new Set(deptItems.map(i => i.category))];
-    const categoriesToShow = deptCategories.length > 0 ? deptCategories : state.categories;
+    const categoriesToShow = deptCategories.length > 0 ? deptCategories : [];
 
     // Generate Categories HTML
     const categoriesHTML = ['All', ...categoriesToShow].map(cat => `
@@ -806,4 +814,3 @@ async function init() {
 }
 
 init();
-
