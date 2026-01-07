@@ -695,8 +695,8 @@ window.importData = (input) => {
 
 // --- 7. INITIALIZATION ---
 async function syncDatabase(force = false) {
-    // If Admin is working, DO NOT overwrite their work with server data
-    if (state.isAdmin && !force) return;
+    // If user is editing a specific item, DO NOT overwrite to prevent data loss. Otherwise, sync live.
+    if (state.editingItem && !force) return;
 
     try {
         // Fetch data.json with a timestamp to bypass cache
@@ -711,14 +711,15 @@ async function syncDatabase(force = false) {
             // Handle both Array (legacy) and Object (new) formats
             if (Array.isArray(serverData)) {
                 newItems = serverData;
-                // Smart Fix: If on a new device with no categories, extract them from the items automatically
-                if (newCategories.length === 0) {
-                    newCategories = [...new Set(newItems.map(item => item.category))];
-                }
             } else if (serverData.items) {
                 newItems = serverData.items;
                 newCategories = serverData.categories || [];
                 if (serverData.config) newConfig = serverData.config;
+            }
+            
+            // Smart Fix: If no categories found, extract from items
+            if (newCategories.length === 0 && newItems.length > 0) {
+                newCategories = [...new Set(newItems.map(item => item.category))].filter(Boolean);
             }
             
             // Only update if data actually changed to prevent flickering
@@ -752,7 +753,7 @@ async function init() {
     render();
 
     // Poll for updates every 5 seconds
-    setInterval(syncDatabase, 5000);
+    setInterval(syncDatabase, 2000);
 }
 
 init();
