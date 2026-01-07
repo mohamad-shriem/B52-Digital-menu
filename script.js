@@ -16,6 +16,7 @@ let state = {
     searchTerm: "",
     activeTab: "items", // for admin dashboard
     editingItem: null,  // stores item object if editing
+    viewMode: "grid",
     
     // Config: Defaults to internal, then loads from data.json
     config: { ...DEFAULT_CONFIG },
@@ -72,6 +73,15 @@ function renderNavbar() {
                             oninput="handleSearch(this.value)"
                         />
                     </div>
+
+                    <!-- View Toggle -->
+                    <button 
+                        onclick="toggleViewMode()"
+                        class="p-2 rounded-full transition-colors bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white"
+                        title="${state.viewMode === 'grid' ? 'Switch to List View' : 'Switch to Grid View'}"
+                    >
+                        <i data-lucide="${state.viewMode === 'grid' ? 'list' : 'grid'}" class="w-5 h-5"></i>
+                    </button>
 
                     <!-- Admin Toggle -->
                     ${state.isAdmin ? `
@@ -150,6 +160,67 @@ function renderItemCard(item) {
     `;
 }
 
+function renderItemRow(item) {
+    return `
+        <div class="group bg-white/5 border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-row h-32 sm:h-40 fade-in w-full">
+            <div class="relative w-28 sm:w-40 shrink-0 overflow-hidden">
+                <img 
+                    src="${item.image || 'https://via.placeholder.com/400x300?text=No+Image'}" 
+                    alt="${item.name}" 
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    onerror="this.src='https://via.placeholder.com/400x300?text=Image+Error'"
+                />
+                <div class="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent opacity-60"></div>
+                ${item.isFeatured ? `
+                <div class="absolute top-2 left-2 z-10">
+                    <span class="bg-yellow-500 text-black text-[10px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-1 shadow-lg">
+                        <i data-lucide="star" class="w-3 h-3 fill-black"></i>
+                    </span>
+                </div>` : ''}
+            </div>
+
+            <div class="p-3 sm:p-4 flex-1 flex flex-col justify-between min-w-0">
+                <div class="flex justify-between items-start gap-2 sm:gap-4">
+                    <div class="min-w-0">
+                        <div class="flex flex-wrap items-center gap-2 mb-1">
+                            <h3 class="text-base sm:text-lg font-bold text-white transition-colors hover:text-[${state.config.primaryColor}] truncate">
+                                ${item.name}
+                            </h3>
+                            <span 
+                                class="px-2 py-0.5 text-[10px] font-bold rounded text-black uppercase tracking-wider shrink-0"
+                                style="background-color: ${state.config.accentColor}"
+                            >
+                                ${item.category}
+                            </span>
+                        </div>
+                        <p class="text-gray-400 text-xs sm:text-sm line-clamp-2">
+                            ${item.description}
+                        </p>
+                    </div>
+                    <span class="text-lg sm:text-xl font-bold whitespace-nowrap text-right" style="color: ${state.config.primaryColor}">
+                        ${state.config.currency}${Number(item.price).toFixed(2)}
+                    </span>
+                </div>
+
+                <div class="flex flex-wrap gap-2 mt-2">
+                    ${item.tags ? item.tags.map(tag => `
+                        <span class="flex items-center text-[10px] uppercase font-bold px-2 py-1 rounded bg-white/5 text-gray-300 border border-white/5">
+                            <i data-lucide="${getTagIconName(tag)}" class="w-3 h-3 mr-1"></i>
+                            ${tag}
+                        </span>
+                    `).join('') : ''}
+                    ${item.calories ? `
+                        <span class="flex items-center text-[10px] uppercase font-bold px-2 py-1 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
+                            <i data-lucide="flame" class="w-3 h-3 mr-1"></i>
+                            ${item.calories}
+                        </span>
+                    ` : ''}
+                </div>
+            </div>
+        </div>
+    `;
+}
+
 function renderUserView() {
     // Filter Items
     const filtered = state.items.filter(item => {
@@ -170,8 +241,13 @@ function renderUserView() {
         </button>
     `).join('');
 
+    const isGrid = state.viewMode === 'grid';
+    const containerClass = isGrid 
+        ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" 
+        : "flex flex-col gap-4 max-w-4xl mx-auto";
+
     // Generate Items HTML
-    const itemsHTML = filtered.map(item => renderItemCard(item)).join('');
+    const itemsHTML = filtered.map(item => isGrid ? renderItemCard(item) : renderItemRow(item)).join('');
 
     return `
         <div class="mb-8 fade-in">
@@ -192,14 +268,14 @@ function renderUserView() {
                 <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                     <i data-lucide="star" class="text-yellow-400 fill-yellow-400"></i> Featured
                 </h2>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    ${state.items.filter(i => i.isFeatured).map(item => renderItemCard(item)).join('')}
+                <div class="${containerClass}">
+                    ${state.items.filter(i => i.isFeatured).map(item => isGrid ? renderItemCard(item) : renderItemRow(item)).join('')}
                 </div>
             </div>
             <div class="w-full h-px bg-white/10 mb-8"></div>
         ` : ''}
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div class="${containerClass}">
             ${filtered.length > 0 ? itemsHTML : `
                 <div class="col-span-full py-20 text-center text-gray-500">
                     <i data-lucide="dumbbell" class="w-16 h-16 mx-auto mb-4 opacity-20"></i>
@@ -474,6 +550,11 @@ window.toggleAdmin = () => {
             alert("Incorrect password");
         }
     }
+};
+
+window.toggleViewMode = () => {
+    state.viewMode = state.viewMode === 'grid' ? 'list' : 'grid';
+    render();
 };
 
 window.handleSearch = (val) => {
