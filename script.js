@@ -588,6 +588,7 @@ window.exportData = () => {
 };
 
 window.importData = (input) => {
+    if (!input.files.length) return;
     const fileReader = new FileReader();
     fileReader.readAsText(input.files[0], "UTF-8");
     fileReader.onload = e => {
@@ -668,10 +669,4 @@ async function init() {
     setInterval(syncDatabase, 5000);
 }
 
-// Fix for file input cancellation error
-window.importData = (input) => {
-    if (!input.files.length) return;
-    const fileReader = new FileReader();
-    // ... existing code ...
 init();
-}
