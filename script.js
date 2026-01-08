@@ -29,340 +29,6 @@ const DEFAULT_CONFIG = {
     adminPassword: "123",
 };
 
-// --- 1.5 INITIAL DATA (Embedded for offline use) ---
-const INITIAL_DATA = {
-  items: [
-    {
-      "id": 1,
-      "name": "Espresso",
-      "price": 1.67,
-      "category": "Hot Drinks",
-      "image": "https://www.nestleprofessional.in/sites/default/files/2021-08/Espresso_0.jpg",
-      "description": "Coffee blend",
-      "tags": ["Strong", "Sugar Free", "Keto"],
-      "calories": "9 kcal"
-    },
-    {
-      "id": 2,
-      "name": "Double espresso",
-      "price": 3.33,
-      "category": "Hot Drinks",
-      "image": "https://sumatocoffee.com/cdn/shop/articles/espresso_d93cf1fb-0d4d-4da2-877f-c8226560ea4a.png?v=1758145494&width=640",
-      "description": "Coffee blend",
-      "tags": ["Strong", "Sugar Free", "Keto"],
-      "calories": "18 kcal"
-    },
-    {
-      "id": 3,
-      "name": "Tea selection",
-      "price": 2,
-      "category": "Hot Drinks",
-      "image": "https://m.media-amazon.com/images/I/812MmvO2IhL._AC_UF894,1000_QL80_.jpg",
-      "description": "Flavoured premium tea",
-      "tags": ["Herbal", "Sugar Free", "Relaxing"],
-      "calories": "2 kcal"
-    },
-    {
-      "id": 4,
-      "name": "Ginger honey",
-      "price": 2.5,
-      "category": "Hot Drinks",
-      "image": "https://st5.depositphotos.com/1171117/61711/i/450/depositphotos_617115596-stock-photo-ginger-tea-lemon-honey-thyme.jpg",
-      "description": "Ginger - honey - mint leaves - lemon slice",
-      "tags": ["Immunity", "Healthy", "Caffeine Free"],
-      "calories": "45 kcal"
-    },
-    {
-      "id": 5,
-      "name": "Cappuccino",
-      "price": 4.44,
-      "category": "Hot Drinks",
-      "image": "https://coffeeconnection.com.au/cdn/shop/articles/health-benefits-of-cappuccino-coffee-908368.jpg?v=1748601688",
-      "description": "Double espresso with zero fat milk and extra milk foam",
-      "tags": ["Dairy", "Low Fat", "Classic"],
-      "calories": "80 kcal"
-    },
-    {
-      "id": 6,
-      "name": "Nescafe",
-      "price": 3.33,
-      "category": "Hot Drinks",
-      "image": "https://cdn.pixabay.com/photo/2022/06/30/10/39/coffee-7293437_1280.jpg",
-      "description": "Instant coffee with zero fat Or Coffee mate Light",
-      "tags": ["Quick", "Dairy", "Light"],
-      "calories": "60 kcal"
-    },
-    {
-      "id": 7,
-      "name": "Latte classic",
-      "price": 4.44,
-      "category": "Hot Drinks",
-      "image": "https://img.freepik.com/free-photo/caramel-latte-table_140725-7215.jpg?semt=ais_hybrid&w=740&q=80",
-      "description": "Double espresso with milk and milk foam",
-      "tags": ["Dairy", "Creamy", "Popular"],
-      "calories": "120 kcal"
-    },
-    {
-      "id": 8,
-      "name": "Americano",
-      "price": 3.33,
-      "category": "Hot Drinks",
-      "image": "https://www.breville.com/content/breville/us/en/blog/coffee-and-espresso/americano-vs-drip-coffee/_jcr_content/root/container_741553154/container/image.coreimg.85.1024.jpeg/1718696975912/americano-vs-drip-coffee.jpeg",
-      "description": "Double espresso and hot water",
-      "tags": ["Sugar Free", "Strong", "Keto"],
-      "calories": "15 kcal"
-    },
-    {
-      "id": 9,
-      "name": "Spanish latte",
-      "price": 5,
-      "category": "Hot Drinks",
-      "image": "https://img.freepik.com/free-photo/caramel-latte-table_140725-4503.jpg?semt=ais_hybrid&w=740&q=80",
-      "description": "Double espresso with milk and milk foam and condensed milk",
-      "tags": ["Sweet", "Dairy", "Rich"],
-      "calories": "210 kcal"
-    },
-    {
-      "id": 10,
-      "name": "Latte flavored",
-      "price": 5,
-      "category": "Hot Drinks",
-      "image": "https://img.freepik.com/premium-photo/close-up-coffee-served-table_1048944-4846657.jpg",
-      "description": "Double espresso with milk and milk foam zero sugar flavour",
-      "tags": ["Dairy", "Zero Sugar", "Flavored"],
-      "calories": "130 kcal"
-    },
-    {
-      "id": 11,
-      "name": "Iced Latte",
-      "price": 4.5,
-      "category": "Cold Drinks",
-      "image": "https://theicedcoffee.com/wp-content/uploads/2025/05/p88-2.webp",
-      "description": "Double espresso + milk + Ice",
-      "tags": ["Cold", "Dairy", "Refreshing"],
-      "calories": "110 kcal"
-    },
-    {
-      "id": 12,
-      "name": "Iced Latte flavored",
-      "price": 5,
-      "category": "Cold Drinks",
-      "image": "https://cdn11.bigcommerce.com/s-5ljyj9oebs/images/stencil/600x600/products/2819/18201/P071422183748_1__66386.1690917599.jpg?c=2",
-      "description": "Double espresso + milk + Ice and zero sugar flavour",
-      "tags": ["Cold", "Dairy", "Sugar Free"],
-      "calories": "120 kcal"
-    },
-    {
-      "id": 13,
-      "name": "Iced Americano",
-      "price": 3.5,
-      "category": "Cold Drinks",
-      "image": "https://ungroundedcoffee.com/image/cache/data/Products/Beverage/IcedAmericano-600x600-500x500.jpg",
-      "description": "Double espresso + water + ice",
-      "tags": ["Cold", "Sugar Free", "Low Calorie"],
-      "calories": "15 kcal"
-    },
-    {
-      "id": 14,
-      "name": "Iced Spanish latte",
-      "price": 5,
-      "category": "Cold Drinks",
-      "image": "https://thegirlonbloor.com/wp-content/uploads/2025/05/Iced-latte-hero.jpg",
-      "description": "Double espresso + milk + ice + condensed milk",
-      "tags": ["Cold", "Sweet", "Dairy"],
-      "calories": "220 kcal"
-    },
-    {
-      "id": 15,
-      "name": "Classic Mojito",
-      "price": 4.44,
-      "category": "Mojitos",
-      "image": "https://www.cocktail.fr/wp-content/uploads/2017/05/cocktail.fr-44155-1-1013x675.jpg.webp",
-      "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water",
-      "tags": ["Sugar Free", "Vegan", "Refreshing"],
-      "calories": "40 kcal"
-    },
-    {
-      "id": 16,
-      "name": "Passion Fruit Mojito",
-      "price": 5,
-      "category": "Mojitos",
-      "image": "https://i.pinimg.com/736x/f1/f6/37/f1f63739d777f7b2e85b98c61775ec4f.jpg",
-      "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water - Passion fruit fresh",
-      "tags": ["Fruity", "Vegan", "Sugar Free"],
-      "calories": "65 kcal"
-    },
-    {
-      "id": 17,
-      "name": "Strawberry Mojito",
-      "price": 5,
-      "category": "Mojitos",
-      "image": "https://drinkdesoi.com/cdn/shop/articles/Strawberry_Mojito_Mocktail_Recipe_2048x2048.webp?v=1724333203",
-      "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water - strawberry fresh",
-      "tags": ["Fruity", "Vegan", "Sugar Free"],
-      "calories": "60 kcal"
-    },
-    {
-      "id": 18,
-      "name": "Mixed berries Mojito",
-      "price": 6.11,
-      "category": "Mojitos",
-      "image": "https://www.nutmegnanny.com/wp-content/uploads/2015/03/mixed-berry-mojito-pic.jpg",
-      "description": "Mint leaves - lemon slices and juice - syrup sweetener zero sugar - ice - Sparkling water - mixed berries",
-      "tags": ["Antioxidants", "Vegan", "Sugar Free"],
-      "calories": "70 kcal"
-    },
-    {
-      "id": 19,
-      "name": "Orange",
-      "price": 3.33,
-      "category": "Fresh Juice",
-      "image": "https://www.organicfacts.net/wp-content/uploads/orangejuice-1.jpg",
-      "description": "Fresh orange",
-      "tags": ["Vitamin C", "Vegan", "Natural"],
-      "calories": "110 kcal"
-    },
-    {
-      "id": 20,
-      "name": "Mango",
-      "price": 4,
-      "category": "Fresh Juice",
-      "image": "https://vaya.in/recipes/wp-content/uploads/2018/02/mango-frooti.jpg",
-      "description": "Fresh mango",
-      "tags": ["Tropical", "Vegan", "Sweet"],
-      "calories": "130 kcal"
-    },
-    {
-      "id": 21,
-      "name": "Carrots",
-      "price": 3.33,
-      "category": "Fresh Juice",
-      "image": "https://vaya.in/recipes/wp-content/uploads/2018/05/Carrot-Juice.jpg",
-      "description": "Fresh carrots",
-      "tags": ["Detox", "Vegan", "Healthy"],
-      "calories": "95 kcal"
-    },
-    {
-      "id": 22,
-      "name": "Carrots and orange",
-      "price": 3.5,
-      "category": "Fresh Juice",
-      "image": "https://i.pinimg.com/736x/ca/b6/ba/cab6bac558da7692699e059f993503a1.jpg",
-      "description": "Fresh carrots and orange",
-      "tags": ["Immunity", "Vegan", "Vitamin C"],
-      "calories": "100 kcal"
-    },
-    {
-      "id": 23,
-      "name": "Apples",
-      "price": 4.5,
-      "category": "Fresh Juice",
-      "image": "https://www.shutterstock.com/image-photo/cool-apple-juice-on-wooden-600nw-2507254769.jpg",
-      "description": "Fresh apples",
-      "tags": ["Natural", "Vegan", "Refreshing"],
-      "calories": "115 kcal"
-    },
-    {
-      "id": 24,
-      "name": "Apples and beetroot",
-      "price": 4.5,
-      "category": "Fresh Juice",
-      "image": "https://i.ytimg.com/vi/5Vox0s417cY/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDuIhUtpTryKblhvMU-nMl_mt4rjQ",
-      "description": "Apples and Beetroot",
-      "tags": ["Detox", "Vegan", "Superfood"],
-      "calories": "110 kcal"
-    },
-    {
-      "id": 25,
-      "name": "Banana milk",
-      "price": 4,
-      "category": "Fresh Juice",
-      "image": "https://tenina.com/cdn-cgi/image/width=1200,quality=82,format=auto,fit=cover/uploads/recipe-images/Banana-Milk-P.jpg",
-      "description": "Banana and zero fat milk and honey",
-      "tags": ["Dairy", "Energy", "Sweet"],
-      "calories": "180 kcal"
-    },
-    {
-      "id": 26,
-      "name": "Golden Gain",
-      "price": 5,
-      "category": "Fresh Juice",
-      "image": "https://gimmedelicious.com/wp-content/uploads/2024/03/bananadatesmoothie-6.jpg",
-      "description": "Banana + Milk + date",
-      "tags": ["Energy", "Post-Workout", "Natural Sweetener"],
-      "calories": "250 kcal"
-    },
-    {
-      "id": 27,
-      "name": "Avocado",
-      "price": 7,
-      "category": "Fresh Juice",
-      "image": "https://rita.com.vn/images/2020/avocado-smoothie.webp",
-      "description": "Avocados with nuts and honey",
-      "tags": ["Healthy Fats", "Rich", "Filling"],
-      "calories": "320 kcal"
-    },
-    {
-      "id": 28,
-      "name": "Passion orange",
-      "price": 4.5,
-      "category": "Fresh Juice",
-      "image": "https://thumbs.dreamstime.com/b/passion-fruit-juice-halves-glass-placed-table-accompanied-two-filled-yellow-orange-liquid-contains-401581562.jpg",
-      "description": "Fresh orange combined with passion",
-      "tags": ["Tropical", "Vitamin C", "Zesty"],
-      "calories": "120 kcal"
-    },
-    {
-      "id": 29,
-      "name": "Water Large",
-      "price": 1,
-      "category": "Water",
-      "image": "https://cdn.mafrservices.com/sys-master-root/h7e/h91/28072939585566/347517_main.jpg?im=Resize=376",
-      "description": "Pure mineral water",
-      "tags": ["Hydration", "Zero Calorie"],
-      "calories": "0 kcal"
-    },
-    {
-      "id": 30,
-      "name": "Water Small",
-      "price": 0.5,
-      "category": "Water",
-      "image": "https://cdn.mafrservices.com/sys-master-root/hf5/h9a/28072939814942/347518_main.jpg?im=Resize=376",
-      "description": "Pure mineral water",
-      "tags": ["Hydration", "Zero Calorie"],
-      "calories": "0 kcal"
-    },
-    {
-      "id": 31,
-      "name": "Sparkling Water",
-      "price": 1.22,
-      "category": "Water",
-      "image": "https://freds-food.com/wp-content/uploads/2024/10/img_7349.jpeg",
-      "description": "Carbonated mineral water",
-      "tags": ["Fizzy", "Zero Calorie", "Refreshing"],
-      "calories": "0 kcal"
-    },
-    {
-      "id": 32,
-      "name": "Protein shake",
-      "price": 5,
-      "category": "Protein Shakes",
-      "image": "https://www.natalieshealth.com/wp-content/uploads/2021/01/Peanut-Butter-Protein-Shake-2308.jpg",
-      "description": "Raw ISO Protein shake",
-      "tags": ["High Protien", "Muscle Recovery", "Gym"],
-      "calories": "150 kcal"
-    }
-  ],
-  categories: [
-    "Hot Drinks",
-    "Cold Drinks",
-    "Mojitos",
-    "Fresh Juice",
-    "Water",
-    "Protein Shakes"
-  ]
-};
-
 // --- 2. STATE MANAGEMENT ---
 let state = {
     isLoading: true,
@@ -678,7 +344,7 @@ function renderAdminDashboard() {
     if (state.activeTab === 'items') {
         const isEditing = state.editingItem !== null;
         const formItem = state.editingItem || { name: '', description: '', price: '', category: state.categories[0] || '', image: '', tags: [], calories: '', department: 'Bar' };
-        
+
         // Infer department for legacy items being edited
         if (!formItem.department && formItem.category) {
             formItem.department = (formItem.category === 'Protein Shakes') ? 'Supplements' : 'Bar';
@@ -845,10 +511,6 @@ function renderAdminDashboard() {
                     <br>To make changes permanent in the code (for other devices), click <b>Copy Data for JS</b> and update <b>script.js</b>.
                 </p>
                 <div class="flex flex-wrap gap-4">
-                    <button onclick="copyJSData()" class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold bg-purple-600 hover:bg-purple-700 text-white transition-colors">
-                        <i data-lucide="code" class="w-5 h-5"></i>
-                        Copy Data for JS
-                    </button>
                     <button onclick="exportData()" class="flex items-center gap-2 px-6 py-3 rounded-lg font-bold bg-green-600 hover:bg-green-700 text-white transition-colors">
                         <i data-lucide="download" class="w-5 h-5"></i>
                         Export Data (JSON)
@@ -1092,17 +754,6 @@ window.deleteCategory = (cat) => {
     }
 };
 
-window.copyJSData = () => {
-    const data = {
-        items: state.items,
-        categories: state.categories
-    };
-    const text = `const INITIAL_DATA = ${JSON.stringify(data, null, 2)};`;
-    navigator.clipboard.writeText(text).then(() => {
-        alert("Data copied to clipboard!\n\n1. Open script.js\n2. Find 'const INITIAL_DATA = ...'\n3. Replace it with the copied text.");
-    }).catch(() => alert("Failed to copy. Check permissions."));
-};
-
 // Import/Export
 window.exportData = () => {
     const data = {
@@ -1162,32 +813,16 @@ function init() {
             const data = docSnap.data();
             state.categories = data.categories || [];
             state.config = { ...DEFAULT_CONFIG, ...(data.config || {}) };
-        } else {
-            // Seed Settings if missing
-            setDoc(doc(db, SETTINGS_COL, SETTINGS_DOC), {
-                config: DEFAULT_CONFIG,
-                categories: INITIAL_DATA.categories
-            });
         }
         render();
     });
 
     // 2. Listen for Items Collection
     onSnapshot(collection(db, ITEMS_COL), (snapshot) => {
-        if (snapshot.empty && state.items.length === 0) {
-            // Seed Items if DB is empty (First run)
-            console.log("Seeding items...");
-            const batch = writeBatch(db);
-            INITIAL_DATA.items.forEach(item => {
-                batch.set(doc(db, ITEMS_COL, String(item.id)), item);
-            });
-            batch.commit();
-        } else {
-            state.items = [];
-            snapshot.forEach(doc => {
-                state.items.push(doc.data());
-            });
-        }
+        state.items = [];
+        snapshot.forEach(doc => {
+            state.items.push(doc.data());
+        });
 
         state.isLoading = false;
         render();
