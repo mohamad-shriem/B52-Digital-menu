@@ -72,6 +72,16 @@ async function saveSettings() {
 
 // --- 3. HELPER FUNCTIONS ---
 
+const escapeHtml = (unsafe) => {
+    if (typeof unsafe !== 'string') return unsafe;
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+};
+
 const getTagIconName = (tag) => {
     const t = tag.toLowerCase();
     if (t.includes('protein')) return 'dumbbell';
@@ -92,7 +102,7 @@ function renderNavbar() {
                     <div class="w-10 h-10 rounded-lg flex items-center justify-center transform -skew-x-12" style="background-color: ${state.config.primaryColor}">
                         <i data-lucide="dumbbell" class="text-white w-6 h-6 skew-x-12"></i>
                     </div>
-                    <span class="font-bold text-xl tracking-wider uppercase block">${state.config.gymName}</span>
+                    <span class="font-bold text-xl tracking-wider uppercase block">${escapeHtml(state.config.gymName)}</span>
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -154,7 +164,7 @@ function renderItemCard(item) {
                         class="px-2 py-1 text-xs font-bold rounded text-black uppercase tracking-wider"
                         style="background-color: ${state.config.accentColor}"
                     >
-                        ${item.category}
+                        ${escapeHtml(item.category)}
                     </span>
                 </div>
                 ${item.isFeatured ? `
@@ -168,7 +178,7 @@ function renderItemCard(item) {
             <div class="p-5 flex-1 flex flex-col">
                 <div class="flex justify-between items-start mb-2">
                     <h3 class="text-lg font-bold transition-colors hover:text-[${state.config.primaryColor}]">
-                        ${item.name}
+                        ${escapeHtml(item.name)}
                     </h3>
                     <span class="text-xl font-bold whitespace-nowrap" style="color: ${state.config.primaryColor}">
                         ${state.config.currency}${Number(item.price).toFixed(2)}
@@ -176,20 +186,20 @@ function renderItemCard(item) {
                 </div>
                 
                 <p class="opacity-70 text-sm mb-4 line-clamp-2 flex-1">
-                    ${item.description}
+                    ${escapeHtml(item.description)}
                 </p>
 
                 <div class="flex flex-wrap gap-2 mb-4">
                     ${item.tags ? item.tags.map(tag => `
                         <span class="flex items-center text-[10px] uppercase font-bold px-2 py-1 rounded bg-white/5 text-gray-300 border border-white/5">
                             <i data-lucide="${getTagIconName(tag)}" class="w-3 h-3 mr-1"></i>
-                            ${tag}
+                            ${escapeHtml(tag)}
                         </span>
                     `).join('') : ''}
                     ${item.calories ? `
                         <span class="flex items-center text-[10px] uppercase font-bold px-2 py-1 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
                             <i data-lucide="flame" class="w-3 h-3 mr-1"></i>
-                            ${item.calories}
+                            ${escapeHtml(item.calories)}
                         </span>
                     ` : ''}
                 </div>
@@ -222,17 +232,17 @@ function renderItemRow(item) {
                     <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2 mb-1">
                             <h3 class="text-base sm:text-lg font-bold transition-colors hover:text-[${state.config.primaryColor}] truncate">
-                                ${item.name}
+                                ${escapeHtml(item.name)}
                             </h3>
                             <span 
                                 class="px-2 py-0.5 text-[10px] font-bold rounded text-black uppercase tracking-wider shrink-0"
                                 style="background-color: ${state.config.accentColor}"
                             >
-                                ${item.category}
+                                ${escapeHtml(item.category)}
                             </span>
                         </div>
                         <p class="opacity-70 text-xs sm:text-sm line-clamp-2">
-                            ${item.description}
+                            ${escapeHtml(item.description)}
                         </p>
                     </div>
                     <span class="text-lg sm:text-xl font-bold whitespace-nowrap text-right" style="color: ${state.config.primaryColor}">
@@ -244,13 +254,13 @@ function renderItemRow(item) {
                     ${item.tags ? item.tags.map(tag => `
                         <span class="flex items-center text-[10px] uppercase font-bold px-2 py-1 rounded bg-white/5 text-gray-300 border border-white/5">
                             <i data-lucide="${getTagIconName(tag)}" class="w-3 h-3 mr-1"></i>
-                            ${tag}
+                            ${escapeHtml(tag)}
                         </span>
                     `).join('') : ''}
                     ${item.calories ? `
                         <span class="flex items-center text-[10px] uppercase font-bold px-2 py-1 rounded bg-orange-500/10 text-orange-400 border border-orange-500/20">
                             <i data-lucide="flame" class="w-3 h-3 mr-1"></i>
-                            ${item.calories}
+                            ${escapeHtml(item.calories)}
                         </span>
                     ` : ''}
                 </div>
@@ -286,7 +296,7 @@ function renderUserView() {
             class="px-6 py-2 rounded-full text-sm font-bold whitespace-nowrap transition-all duration-300 border ${state.activeCategory === cat ? 'text-white border-transparent shadow-lg' : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30 hover:text-white'}"
             style="${state.activeCategory === cat ? `background-color: ${state.config.primaryColor}; box-shadow: 0 0 15px ${state.config.primaryColor}40` : ''}"
         >
-            ${cat}
+            ${escapeHtml(cat)}
         </button>
     `).join('');
 
@@ -301,10 +311,10 @@ function renderUserView() {
     return `
         <div class="mb-8 fade-in">
             <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 mb-2" style="background-image: linear-gradient(to right, ${state.config.textColor}, ${state.config.textColor}80)">
-                ${state.config.mainHeading}
+                ${escapeHtml(state.config.mainHeading)}
             </h1>
             <p class="opacity-70 max-w-2xl">
-                ${state.config.subHeading}
+                ${escapeHtml(state.config.subHeading)}
             </p>
         </div>
 
@@ -371,7 +381,7 @@ function renderAdminDashboard() {
                 <form onsubmit="handleItemSubmit(event)" class="space-y-4">
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Item Name</label>
-                        <input required type="text" name="name" value="${formItem.name}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
+                        <input required type="text" name="name" value="${escapeHtml(formItem.name)}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -381,7 +391,7 @@ function renderAdminDashboard() {
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Category</label>
                             <select name="category" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-gray-300">
-                                ${state.categories.map(c => `<option value="${c}" ${formItem.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+                                ${state.categories.map(c => `<option value="${escapeHtml(c)}" ${formItem.category === c ? 'selected' : ''}>${escapeHtml(c)}</option>`).join('')}
                             </select>
                         </div>
                     </div>
@@ -396,21 +406,21 @@ function renderAdminDashboard() {
                         <div class="space-y-2">
                             <input type="file" name="imageFile" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20"/>
                             <div class="text-center text-[10px] text-gray-500">- OR -</div>
-                            <input type="text" name="image" placeholder="Paste Image URL..." value="${formItem.image}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
+                            <input type="text" name="image" placeholder="Paste Image URL..." value="${escapeHtml(formItem.image || '')}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
                         </div>
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Description</label>
-                        <textarea rows="3" name="description" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">${formItem.description}</textarea>
+                        <textarea rows="3" name="description" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">${escapeHtml(formItem.description)}</textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Health Tags</label>
-                            <input type="text" name="tags" placeholder="Protein, Vegan, GF" value="${tagsString}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
+                            <input type="text" name="tags" placeholder="Protein, Vegan, GF" value="${escapeHtml(tagsString)}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
                         </div>
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Calorie Label</label>
-                            <input type="text" name="calories" placeholder="e.g. 350 kcal" value="${formItem.calories || ''}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
+                            <input type="text" name="calories" placeholder="e.g. 350 kcal" value="${escapeHtml(formItem.calories || '')}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
                         </div>
                     </div>
                     <div class="flex items-center gap-2 pt-2">
@@ -438,10 +448,10 @@ function renderAdminDashboard() {
                         <img src="${item.image || 'https://via.placeholder.com/100'}" alt="${item.name}" class="w-16 h-16 rounded-lg object-cover bg-black/20">
                         <div class="flex-1 min-w-0">
                             <div class="flex items-center gap-2">
-                                <h4 class="font-bold truncate">${item.name}</h4>
-                                <span class="text-xs px-2 py-0.5 rounded bg-white/10 text-gray-400">${item.category}</span>
+                                <h4 class="font-bold truncate">${escapeHtml(item.name)}</h4>
+                                <span class="text-xs px-2 py-0.5 rounded bg-white/10 text-gray-400">${escapeHtml(item.category)}</span>
                             </div>
-                            <p class="text-sm text-gray-500 truncate">${item.description}</p>
+                            <p class="text-sm text-gray-500 truncate">${escapeHtml(item.description)}</p>
                             <div class="mt-1 font-mono text-sm" style="color: ${state.config.primaryColor}">${state.config.currency}${Number(item.price).toFixed(2)}</div>
                         </div>
                         <div class="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -469,15 +479,15 @@ function renderAdminDashboard() {
                 <div class="space-y-4">
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Gym Name</label>
-                        <input type="text" value="${state.config.gymName}" onchange="updateConfig('gymName', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+                        <input type="text" value="${escapeHtml(state.config.gymName)}" onchange="updateConfig('gymName', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Main Heading</label>
-                        <input type="text" value="${state.config.mainHeading}" onchange="updateConfig('mainHeading', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+                        <input type="text" value="${escapeHtml(state.config.mainHeading)}" onchange="updateConfig('mainHeading', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Sub Heading</label>
-                        <textarea onchange="updateConfig('subHeading', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" rows="2">${state.config.subHeading}</textarea>
+                        <textarea onchange="updateConfig('subHeading', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" rows="2">${escapeHtml(state.config.subHeading)}</textarea>
                     </div>
                     <div class="grid grid-cols-2 gap-4">
                         <div>
@@ -542,7 +552,7 @@ function renderAdminDashboard() {
                     ${state.categories.map((cat, index) => `
                         <span class="flex items-center gap-1 bg-black/40 pl-3 pr-1 py-1 rounded-full text-sm border border-white/5">
                             ${index > 0 ? `<button type="button" onclick="moveCategory(${index}, -1)" class="text-gray-500 hover:text-white"><i data-lucide="chevron-left" class="w-3 h-3"></i></button>` : ''}
-                            <span class="mx-1">${cat}</span>
+                            <span class="mx-1">${escapeHtml(cat)}</span>
                             ${index < state.categories.length - 1 ? `<button type="button" onclick="moveCategory(${index}, 1)" class="text-gray-500 hover:text-white"><i data-lucide="chevron-right" class="w-3 h-3"></i></button>` : ''}
                             <div class="w-px h-3 bg-white/10 mx-1"></div>
                             <button type="button" onclick="deleteCategory('${cat}')" class="text-red-400 hover:text-red-300 p-1"><i data-lucide="x" class="w-3 h-3"></i></button>
