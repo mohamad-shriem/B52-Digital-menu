@@ -289,6 +289,9 @@ function renderUserView() {
     const deptCategories = [...new Set(state.items.filter(i => getDept(i) === state.activeDepartment).map(i => i.category))];
     const categoriesToShow = deptCategories.length > 0 ? deptCategories : [];
 
+    // Get featured items for current department
+    const featuredItems = state.items.filter(i => i.isFeatured && getDept(i) === state.activeDepartment);
+
     // Generate Categories HTML
     const categoriesHTML = ['All', ...categoriesToShow].map(cat => `
         <button
@@ -335,13 +338,13 @@ function renderUserView() {
             ${categoriesHTML}
         </div>
 
-        ${state.activeCategory === 'All' && !state.searchTerm && state.items.some(i => i.isFeatured) ? `
+        ${state.activeCategory === 'All' && !state.searchTerm && featuredItems.length > 0 ? `
             <div class="mb-8 fade-in">
                 <h2 class="text-2xl font-bold text-white mb-4 flex items-center gap-2">
                     <i data-lucide="star" class="text-yellow-400 fill-yellow-400"></i> Featured
                 </h2>
                 <div class="${containerClass}">
-                    ${state.items.filter(i => i.isFeatured).map(item => isGrid ? renderItemCard(item) : renderItemRow(item)).join('')}
+                    ${featuredItems.map(item => isGrid ? renderItemCard(item) : renderItemRow(item)).join('')}
                 </div>
             </div>
             <div class="w-full h-px bg-white/10 mb-8"></div>
