@@ -2,6 +2,7 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
 import { getFirestore, doc, onSnapshot, setDoc, collection, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyD9IkrIInFpj3EvgaA8xc6TRXsZVLLOHuI",
@@ -15,6 +16,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const storage = getStorage(app);
+const auth = getAuth(app);
 const SETTINGS_COL = "gym_menu_settings";
 const SETTINGS_DOC = "main";
 const ITEMS_COL = "gym_menu_items";
@@ -26,7 +28,6 @@ const DEFAULT_CONFIG = {
     secondaryColor: "#0f172a", // Slate-900
     accentColor: "#22c55e", // Green-500
     currency: "$",
-    adminPassword: "123",
 };
 
 // --- 2. STATE MANAGEMENT ---
@@ -39,6 +40,8 @@ let state = {
     activeTab: "items", // for admin dashboard
     editingItem: null,  // stores item object if editing
     viewMode: "grid",
+    showLoginModal: false,
+    loginError: null,
     
     // Config: Defaults to internal, then loads from data.json
     config: { ...DEFAULT_CONFIG },
@@ -462,10 +465,6 @@ function renderAdminDashboard() {
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Gym Name</label>
                         <input type="text" value="${state.config.gymName}" onchange="updateConfig('gymName', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
                     </div>
-                    <div>
-                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Admin Password</label>
-                        <input type="text" value="${state.config.adminPassword || 'admin'}" onchange="updateConfig('adminPassword', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
-                    </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Primary</label>
@@ -570,6 +569,7 @@ function render() {
     }
     
     content += `</main>`;
+    content += renderLoginModal();
     
     app.innerHTML = content;
     
@@ -602,19 +602,42 @@ window.handleLogoClick = () => {
     }
 };
 
+window.closeLoginModal = () => {
+    state.showLoginModal = false;
+    state.loginError = null;
+    render();
+};
+
+window.handleLogin = async (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    state.loginError = null;
+    
+    const btn = e.target.querySelector('button');
+    const originalText = btn.innerText;
+    btn.disabled = true;
+    btn.innerText = "Authenticating...";
+
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        state.showLoginModal = false;
+    } catch (error) {
+        console.error("Login error", error);
+        state.loginError = "Invalid email or password.";
+        btn.disabled = false;
+        btn.innerText = originalText;
+        render();
+    }
+};
+
 window.toggleAdmin = () => {
     if (state.isAdmin) {
-        state.isAdmin = false;
-        // Re-sync with database when leaving admin mode to ensure we see live data
-        render();
+        signOut(auth).catch(console.error);
     } else {
-        const password = prompt("Enter Admin Password:");
-        if (password === (state.config.adminPassword || "admin")) {
-            state.isAdmin = true;
-            render();
-        } else if (password !== null) {
-            alert("Incorrect password");
-        }
+        state.showLoginModal = true;
+        state.loginError = null;
+        render();
     }
 };
 
@@ -807,6 +830,13 @@ window.importData = async (input) => {
 
 // --- 7. INITIALIZATION ---
 function init() {
+    // 0. Listen for Auth State
+    onAuthStateChanged(auth, (user) => {
+        state.isAdmin = !!user;
+        if (user) state.showLoginModal = false;
+        render();
+    });
+
     // 1. Listen for Settings (Config & Categories)
     onSnapshot(doc(db, SETTINGS_COL, SETTINGS_DOC), (docSnap) => {
         if (docSnap.exists()) {
