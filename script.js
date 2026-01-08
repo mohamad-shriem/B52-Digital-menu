@@ -1,3 +1,24 @@
+// --- FIREBASE SETUP ---
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getFirestore, doc, onSnapshot, setDoc, collection, deleteDoc, writeBatch } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyD9IkrIInFpj3EvgaA8xc6TRXsZVLLOHuI",
+  authDomain: "b52-digital-menu.firebaseapp.com",
+  projectId: "b52-digital-menu",
+  storageBucket: "b52-digital-menu.firebasestorage.app",
+  messagingSenderId: "578412787584",
+  appId: "1:578412787584:web:08585f18715884e0bd3365"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const storage = getStorage(app);
+const SETTINGS_COL = "gym_menu_settings";
+const SETTINGS_DOC = "main";
+const ITEMS_COL = "gym_menu_items";
+
 // --- 1. DEFAULT DATA ---
 const DEFAULT_CONFIG = {
     gymName: "b52 Fitness Elites",
@@ -356,20 +377,22 @@ let state = {
     // Config: Defaults to internal, then loads from data.json
     config: { ...DEFAULT_CONFIG },
     
-    // DATA: Always loads from data.json (No Local Storage History)
+    // DATA: Synced with Firebase
     categories: [],
     items: []
 };
 
 // Save state helper
-function saveState() {
-    const dataToSave = {
-        items: state.items,
-        categories: state.categories,
-        config: state.config
-    };
-    localStorage.setItem('gymMenuData', JSON.stringify(dataToSave));
-    render();
+async function saveSettings() {
+    try {
+        await setDoc(doc(db, SETTINGS_COL, SETTINGS_DOC), {
+            config: state.config,
+            categories: state.categories
+        }, { merge: true });
+    } catch (error) {
+        console.error("Error saving settings:", error);
+        alert("Failed to save settings.");
+    }
 }
 
 // --- 3. HELPER FUNCTIONS ---
@@ -694,9 +717,12 @@ function renderAdminDashboard() {
                         </select>
                     </div>
                     <div>
-                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Image URL</label>
-                        <input type="text" name="image" placeholder="https://..." value="${formItem.image}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
-                        <p class="text-[10px] text-gray-500 mt-1">Paste a link from Unsplash or your image host.</p>
+                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Image</label>
+                        <div class="space-y-2">
+                            <input type="file" name="imageFile" accept="image/*" class="w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-white/10 file:text-white hover:file:bg-white/20"/>
+                            <div class="text-center text-[10px] text-gray-500">- OR -</div>
+                            <input type="text" name="image" placeholder="Paste Image URL..." value="${formItem.image}" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm focus:border-blue-500 outline-none text-white">
+                        </div>
                     </div>
                     <div>
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Description</label>
@@ -918,7 +944,6 @@ window.toggleAdmin = () => {
     if (state.isAdmin) {
         state.isAdmin = false;
         // Re-sync with database when leaving admin mode to ensure we see live data
-        syncDatabase(true); 
         render();
     } else {
         const password = prompt("Enter Admin Password:");
@@ -962,29 +987,56 @@ window.setAdminTab = (tab) => {
 };
 
 // Item CRUD
-window.handleItemSubmit = (e) => {
+window.handleItemSubmit = async (e) => {
     e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.innerText;
+    submitBtn.disabled = true;
+    submitBtn.innerText = "Processing...";
+
     const formData = new FormData(e.target);
+    let imageUrl = formData.get('image');
+    const imageFile = formData.get('imageFile');
+
+    // Handle Image Upload
+    if (imageFile && imageFile.size > 0) {
+        try {
+            submitBtn.innerText = "Uploading...";
+            const storageRef = ref(storage, `menu_items/${Date.now()}_${imageFile.name}`);
+            const snapshot = await uploadBytes(storageRef, imageFile);
+            imageUrl = await getDownloadURL(snapshot.ref);
+        } catch (err) {
+            console.error("Upload failed", err);
+            alert("Image upload failed. Check console.");
+            submitBtn.disabled = false;
+            submitBtn.innerText = originalText;
+            return;
+        }
+    }
+
     const newItem = {
         id: state.editingItem ? state.editingItem.id : Date.now(),
         name: formData.get('name'),
         price: parseFloat(formData.get('price')),
         category: formData.get('category'),
         department: formData.get('department'),
-        image: formData.get('image'),
+        image: imageUrl,
         description: formData.get('description'),
         tags: formData.get('tags').split(',').map(t => t.trim()).filter(Boolean),
         calories: formData.get('calories'),
         isFeatured: formData.get('isFeatured') === 'on'
     };
 
-    if (state.editingItem) {
-        state.items = state.items.map(item => item.id === newItem.id ? newItem : item);
+    try {
+        await setDoc(doc(db, ITEMS_COL, String(newItem.id)), newItem);
         state.editingItem = null;
-    } else {
-        state.items.push(newItem);
+        // render() is triggered by onSnapshot
+    } catch (error) {
+        console.error("Error saving item:", error);
+        alert("Failed to save item.");
+        submitBtn.disabled = false;
+        submitBtn.innerText = originalText;
     }
-    saveState();
 };
 
 window.startEdit = (id) => {
@@ -998,17 +1050,21 @@ window.cancelEdit = () => {
     render();
 };
 
-window.deleteItem = (id) => {
+window.deleteItem = async (id) => {
     if(confirm("Are you sure you want to delete this item?")) {
-        state.items = state.items.filter(i => i.id !== id);
-        saveState();
+        try {
+            await deleteDoc(doc(db, ITEMS_COL, String(id)));
+        } catch (error) {
+            console.error("Error deleting item:", error);
+            alert("Failed to delete item.");
+        }
     }
 };
 
 // Config & Categories
 window.updateConfig = (key, val) => {
     state.config[key] = val;
-    saveState();
+    saveSettings();
 };
 
 window.addCategory = (e) => {
@@ -1016,7 +1072,7 @@ window.addCategory = (e) => {
     const val = e.target.newCat.value.trim();
     if(val && !state.categories.includes(val)) {
         state.categories.push(val);
-        saveState();
+        saveSettings();
     }
 };
 
@@ -1025,14 +1081,14 @@ window.moveCategory = (index, direction) => {
     if (newIndex >= 0 && newIndex < state.categories.length) {
         // Swap
         [state.categories[index], state.categories[newIndex]] = [state.categories[newIndex], state.categories[index]];
-        saveState();
+        saveSettings();
     }
 };
 
 window.deleteCategory = (cat) => {
     if(confirm(`Delete category "${cat}"?`)) {
         state.categories = state.categories.filter(c => c !== cat);
-        saveState();
+        saveSettings();
     }
 };
 
@@ -1062,58 +1118,80 @@ window.exportData = () => {
     linkElement.click();
 };
 
-window.importData = (input) => {
+window.importData = async (input) => {
     if (!input.files.length) return;
     const fileReader = new FileReader();
     fileReader.readAsText(input.files[0], "UTF-8");
-    fileReader.onload = e => {
+    fileReader.onload = async e => {
         try {
             const parsedData = JSON.parse(e.target.result);
+            const batch = writeBatch(db);
             
-            // Handle new format { items: [], categories: [] }
-            if (parsedData.items && Array.isArray(parsedData.items)) {
-                state.items = parsedData.items;
-                if (parsedData.categories) state.categories = parsedData.categories;
-                if (parsedData.config) state.config = parsedData.config;
-                saveState();
-                alert("Menu and categories successfully imported!");
-            } else if(Array.isArray(parsedData)) {
-                state.items = parsedData;
-                saveState();
-                alert("Menu items imported! (Note: Categories were not in this file)");
-            } else {
-                alert("Invalid JSON format.");
+            // 1. Update Settings (Config & Categories)
+            if (parsedData.config || parsedData.categories) {
+                const settingsRef = doc(db, SETTINGS_COL, SETTINGS_DOC);
+                batch.set(settingsRef, {
+                    config: parsedData.config || state.config,
+                    categories: parsedData.categories || state.categories
+                }, { merge: true });
             }
+
+            // 2. Update Items
+            if (parsedData.items && Array.isArray(parsedData.items)) {
+                parsedData.items.forEach(item => {
+                    const itemRef = doc(db, ITEMS_COL, String(item.id));
+                    batch.set(itemRef, item);
+                });
+            }
+            
+            await batch.commit();
+            alert("Data successfully imported to Database!");
+            
         } catch (err) {
-            alert("Error reading file.");
+            console.error(err);
+            alert("Error importing data.");
         }
     };
 };
 
 // --- 7. INITIALIZATION ---
-async function init() {
-    // Try loading from LocalStorage first
-    const savedData = localStorage.getItem('gymMenuData');
-    
-    if (savedData) {
-        try {
-            const parsed = JSON.parse(savedData);
-            state.items = parsed.items || [];
-            state.categories = parsed.categories || [];
-            state.config = { ...DEFAULT_CONFIG, ...parsed.config };
-        } catch (e) {
-            console.error("Error parsing saved data", e);
-            state.items = INITIAL_DATA.items;
-            state.categories = INITIAL_DATA.categories;
+function init() {
+    // 1. Listen for Settings (Config & Categories)
+    onSnapshot(doc(db, SETTINGS_COL, SETTINGS_DOC), (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            state.categories = data.categories || [];
+            state.config = { ...DEFAULT_CONFIG, ...(data.config || {}) };
+        } else {
+            // Seed Settings if missing
+            setDoc(doc(db, SETTINGS_COL, SETTINGS_DOC), {
+                config: DEFAULT_CONFIG,
+                categories: INITIAL_DATA.categories
+            });
         }
-    } else {
-        // Fallback to embedded Initial Data
-        state.items = INITIAL_DATA.items;
-        state.categories = INITIAL_DATA.categories;
-    }
+        render();
+    });
 
-    state.isLoading = false;
-    render();
+    // 2. Listen for Items Collection
+    onSnapshot(collection(db, ITEMS_COL), (snapshot) => {
+        if (snapshot.empty && state.items.length === 0) {
+            // Seed Items if DB is empty (First run)
+            console.log("Seeding items...");
+            const batch = writeBatch(db);
+            INITIAL_DATA.items.forEach(item => {
+                batch.set(doc(db, ITEMS_COL, String(item.id)), item);
+            });
+            batch.commit();
+        } else {
+            state.items = [];
+            snapshot.forEach(doc => {
+                state.items.push(doc.data());
+            });
+        }
+
+        state.isLoading = false;
+        render();
+    });
 }
 
 init();
