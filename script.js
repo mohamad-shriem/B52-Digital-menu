@@ -482,11 +482,21 @@ function renderAdminDashboard() {
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Font Family</label>
-                            <input type="text" value="${state.config.fontFamily}" onchange="updateConfig('fontFamily', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="e.g. Arial">
+                            <select onchange="updateConfig('fontFamily', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+                                <option value="ui-sans-serif, system-ui, sans-serif" ${state.config.fontFamily.includes('system-ui') ? 'selected' : ''}>System Sans (Default)</option>
+                                <option value="'Inter', 'Segoe UI', Roboto, sans-serif" ${state.config.fontFamily.includes('Inter') ? 'selected' : ''}>Modern Sans</option>
+                                <option value="ui-serif, Georgia, Cambria, serif" ${state.config.fontFamily.includes('serif') && !state.config.fontFamily.includes('sans') ? 'selected' : ''}>Elegant Serif</option>
+                                <option value="ui-monospace, SFMono-Regular, monospace" ${state.config.fontFamily.includes('monospace') ? 'selected' : ''}>Technical Mono</option>
+                            </select>
                         </div>
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Base Size</label>
-                            <input type="text" value="${state.config.baseFontSize}" onchange="updateConfig('baseFontSize', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="16px">
+                            <select onchange="updateConfig('baseFontSize', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+                                <option value="14px" ${state.config.baseFontSize === '14px' ? 'selected' : ''}>Small (14px)</option>
+                                <option value="16px" ${state.config.baseFontSize === '16px' ? 'selected' : ''}>Medium (16px)</option>
+                                <option value="18px" ${state.config.baseFontSize === '18px' ? 'selected' : ''}>Large (18px)</option>
+                                <option value="20px" ${state.config.baseFontSize === '20px' ? 'selected' : ''}>Extra Large (20px)</option>
+                            </select>
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
@@ -508,7 +518,14 @@ function renderAdminDashboard() {
                         </div>
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Card BG</label>
-                            <input type="text" value="${state.config.cardColor}" onchange="updateConfig('cardColor', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="rgba(...)">
+                            <select onchange="updateConfig('cardColor', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white focus:border-blue-500 outline-none">
+                                <option value="rgba(255, 255, 255, 0.05)" ${state.config.cardColor === 'rgba(255, 255, 255, 0.05)' ? 'selected' : ''}>Glass (Subtle)</option>
+                                <option value="rgba(255, 255, 255, 0.1)" ${state.config.cardColor === 'rgba(255, 255, 255, 0.1)' ? 'selected' : ''}>Glass (Medium)</option>
+                                <option value="rgba(255, 255, 255, 0.2)" ${state.config.cardColor === 'rgba(255, 255, 255, 0.2)' ? 'selected' : ''}>Glass (Strong)</option>
+                                <option value="#1e293b" ${state.config.cardColor === '#1e293b' ? 'selected' : ''}>Solid Slate</option>
+                                <option value="#000000" ${state.config.cardColor === '#000000' ? 'selected' : ''}>Solid Black</option>
+                                <option value="transparent" ${state.config.cardColor === 'transparent' ? 'selected' : ''}>Transparent</option>
+                            </select>
                         </div>
                     </div>
                 </div>
