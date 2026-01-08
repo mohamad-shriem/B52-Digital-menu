@@ -27,6 +27,12 @@ const DEFAULT_CONFIG = {
     primaryColor: "#3b82f6", // Blue-500
     secondaryColor: "#0f172a", // Slate-900
     accentColor: "#22c55e", // Green-500
+    textColor: "#f1f5f9", // Slate-100
+    cardColor: "rgba(255, 255, 255, 0.05)",
+    fontFamily: "ui-sans-serif, system-ui, sans-serif",
+    baseFontSize: "16px",
+    mainHeading: "Fuel Your Workout",
+    subHeading: "Premium nutrition for elite performance. Browse our selection of supplements, meals, and gear.",
     currency: "$",
 };
 
@@ -39,7 +45,7 @@ let state = {
     searchTerm: "",
     activeTab: "items", // for admin dashboard
     editingItem: null,  // stores item object if editing
-    viewMode: "grid",
+    viewMode: "list",
     showLoginModal: false,
     loginError: null,
     
@@ -86,7 +92,7 @@ function renderNavbar() {
                     <div class="w-10 h-10 rounded-lg flex items-center justify-center transform -skew-x-12" style="background-color: ${state.config.primaryColor}">
                         <i data-lucide="dumbbell" class="text-white w-6 h-6 skew-x-12"></i>
                     </div>
-                    <span class="font-bold text-xl tracking-wider uppercase hidden sm:block">${state.config.gymName}</span>
+                    <span class="font-bold text-xl tracking-wider uppercase block">${state.config.gymName}</span>
                 </div>
 
                 <div class="flex items-center gap-4">
@@ -134,7 +140,7 @@ function renderNavbar() {
 
 function renderItemCard(item) {
     return `
-        <div class="group bg-white/5 border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col h-full fade-in">
+        <div class="group border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 flex flex-col h-full fade-in" style="background-color: ${state.config.cardColor}">
             <div class="relative h-48 overflow-hidden">
                 <img 
                     src="${item.image || 'https://via.placeholder.com/400x300?text=No+Image'}" 
@@ -161,7 +167,7 @@ function renderItemCard(item) {
 
             <div class="p-5 flex-1 flex flex-col">
                 <div class="flex justify-between items-start mb-2">
-                    <h3 class="text-lg font-bold text-white transition-colors hover:text-[${state.config.primaryColor}]">
+                    <h3 class="text-lg font-bold transition-colors hover:text-[${state.config.primaryColor}]">
                         ${item.name}
                     </h3>
                     <span class="text-xl font-bold whitespace-nowrap" style="color: ${state.config.primaryColor}">
@@ -169,7 +175,7 @@ function renderItemCard(item) {
                     </span>
                 </div>
                 
-                <p class="text-gray-400 text-sm mb-4 line-clamp-2 flex-1">
+                <p class="opacity-70 text-sm mb-4 line-clamp-2 flex-1">
                     ${item.description}
                 </p>
 
@@ -194,7 +200,7 @@ function renderItemCard(item) {
 
 function renderItemRow(item) {
     return `
-        <div class="group bg-white/5 border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-row h-32 sm:h-40 fade-in w-full">
+        <div class="group border border-white/5 hover:border-white/20 rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1 flex flex-row h-32 sm:h-40 fade-in w-full" style="background-color: ${state.config.cardColor}">
             <div class="relative w-28 sm:w-40 shrink-0 overflow-hidden">
                 <img 
                     src="${item.image || 'https://via.placeholder.com/400x300?text=No+Image'}" 
@@ -215,7 +221,7 @@ function renderItemRow(item) {
                 <div class="flex justify-between items-start gap-2 sm:gap-4">
                     <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2 mb-1">
-                            <h3 class="text-base sm:text-lg font-bold text-white transition-colors hover:text-[${state.config.primaryColor}] truncate">
+                            <h3 class="text-base sm:text-lg font-bold transition-colors hover:text-[${state.config.primaryColor}] truncate">
                                 ${item.name}
                             </h3>
                             <span 
@@ -225,7 +231,7 @@ function renderItemRow(item) {
                                 ${item.category}
                             </span>
                         </div>
-                        <p class="text-gray-400 text-xs sm:text-sm line-clamp-2">
+                        <p class="opacity-70 text-xs sm:text-sm line-clamp-2">
                             ${item.description}
                         </p>
                     </div>
@@ -294,11 +300,11 @@ function renderUserView() {
 
     return `
         <div class="mb-8 fade-in">
-            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 mb-2">
-                Fuel Your Workout
+            <h1 class="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500 mb-2" style="background-image: linear-gradient(to right, ${state.config.textColor}, ${state.config.textColor}80)">
+                ${state.config.mainHeading}
             </h1>
-            <p class="text-gray-400 max-w-2xl">
-                Premium nutrition for elite performance. Browse our selection of supplements, meals, and gear.
+            <p class="opacity-70 max-w-2xl">
+                ${state.config.subHeading}
             </p>
         </div>
 
@@ -315,7 +321,7 @@ function renderUserView() {
             `).join('')}
         </div>
 
-        <div class="flex overflow-x-auto pb-6 gap-3 no-scrollbar mb-4">
+        <div id="category-scroll-container" class="flex overflow-x-auto pb-6 gap-3 no-scrollbar mb-4">
             ${categoriesHTML}
         </div>
 
@@ -465,6 +471,24 @@ function renderAdminDashboard() {
                         <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Gym Name</label>
                         <input type="text" value="${state.config.gymName}" onchange="updateConfig('gymName', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
                     </div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Main Heading</label>
+                        <input type="text" value="${state.config.mainHeading}" onchange="updateConfig('mainHeading', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Sub Heading</label>
+                        <textarea onchange="updateConfig('subHeading', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" rows="2">${state.config.subHeading}</textarea>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Font Family</label>
+                            <input type="text" value="${state.config.fontFamily}" onchange="updateConfig('fontFamily', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="e.g. Arial">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Base Size</label>
+                            <input type="text" value="${state.config.baseFontSize}" onchange="updateConfig('baseFontSize', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="16px">
+                        </div>
+                    </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Primary</label>
@@ -477,6 +501,14 @@ function renderAdminDashboard() {
                         <div>
                             <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Accent</label>
                             <input type="color" class="w-full h-10 rounded cursor-pointer" value="${state.config.accentColor}" onchange="updateConfig('accentColor', this.value)">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Text</label>
+                            <input type="color" class="w-full h-10 rounded cursor-pointer" value="${state.config.textColor}" onchange="updateConfig('textColor', this.value)">
+                        </div>
+                        <div>
+                            <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Card BG</label>
+                            <input type="text" value="${state.config.cardColor}" onchange="updateConfig('cardColor', this.value)" class="w-full bg-black/20 border border-white/10 rounded-lg px-3 py-2 text-sm text-white" placeholder="rgba(...)">
                         </div>
                     </div>
                 </div>
@@ -580,8 +612,16 @@ function renderLoginModal() {
 
 // --- 5. MAIN RENDER LOOP ---
 function render() {
+    // Capture scroll position of categories before re-rendering
+    const catContainer = document.getElementById('category-scroll-container');
+    const savedScroll = catContainer ? catContainer.scrollLeft : 0;
+
     // Update Body Background
-    document.getElementById('body-bg').style.backgroundColor = state.config.secondaryColor;
+    const body = document.getElementById('body-bg');
+    body.style.backgroundColor = state.config.secondaryColor;
+    body.style.color = state.config.textColor;
+    body.style.fontFamily = state.config.fontFamily;
+    body.style.fontSize = state.config.baseFontSize;
 
     const app = document.getElementById('app');
 
@@ -625,6 +665,10 @@ function render() {
     
     app.innerHTML = content;
     
+    // Restore scroll position
+    const newCatContainer = document.getElementById('category-scroll-container');
+    if (newCatContainer) newCatContainer.scrollLeft = savedScroll;
+
     // Re-init icons
     lucide.createIcons();
     
