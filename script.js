@@ -526,6 +526,58 @@ function renderAdminDashboard() {
     }
 }
 
+function renderLoginModal() {
+    if (!state.showLoginModal) return '';
+    return `
+        <div class="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm fade-in">
+            <div class="bg-slate-900 border border-white/10 p-8 rounded-2xl w-full max-w-md relative shadow-2xl">
+                <button onclick="closeLoginModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                
+                <div class="text-center mb-8">
+                    <div class="w-16 h-16 rounded-xl mx-auto flex items-center justify-center mb-4 transform -skew-x-12" style="background-color: ${state.config.primaryColor}">
+                        <i data-lucide="lock" class="text-white w-8 h-8 skew-x-12"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-white">Admin Access</h2>
+                    <p class="text-gray-400 text-sm mt-2">Enter your credentials to manage the menu.</p>
+                </div>
+
+                ${state.loginError ? `
+                    <div class="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg text-sm mb-6 flex items-center gap-2">
+                        <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                        ${state.loginError}
+                    </div>
+                ` : ''}
+
+                <form onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Email</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="mail" class="h-4 w-4 text-gray-400"></i>
+                            </div>
+                            <input type="email" name="email" required placeholder="admin@example.com" class="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-sm focus:border-blue-500 outline-none text-white transition-colors">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase text-gray-500 font-bold mb-1">Password</label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i data-lucide="key" class="h-4 w-4 text-gray-400"></i>
+                            </div>
+                            <input type="password" name="password" required placeholder="••••••••" class="w-full bg-black/20 border border-white/10 rounded-lg pl-10 pr-4 py-3 text-sm focus:border-blue-500 outline-none text-white transition-colors">
+                        </div>
+                    </div>
+                    <button type="submit" class="w-full py-3 rounded-lg font-bold text-white mt-2 transition-transform active:scale-95" style="background-color: ${state.config.primaryColor}">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+        </div>
+    `;
+}
+
 // --- 5. MAIN RENDER LOOP ---
 function render() {
     // Update Body Background
